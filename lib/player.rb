@@ -8,28 +8,3 @@ class Player
     @nb_lose = nb_lose #nombre de défaite
     @nb_players = nb_players #nombre de joueur
   end
-  
-  # Calcul des stats
-
-  def win #victoire
-    @nb_win += 1
-    add_players
-  end
-
-  def lose #défaite
-    @nb_lose += 1
-    add_players
-  end
-
-  def add_players 
-    @nb_players += 1
-  end
-
-  # Montre les stats
-  def show_states 
-    puts"First name" => @name
-    puts "Number of game played" => @nb_players
-    puts "Wins" => @nb_win
-    puts "Lose" => @nb_lose
-  end
-end
