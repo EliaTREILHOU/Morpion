@@ -1,50 +1,66 @@
+require_relative './board'
+require_relative './boardcase'
+
 class Game
-  attr_reader :board, :active_player, :player1, :player2
-  
-  def initialize(player1,player2, active_player=player1)
-    @board = Board.new 
-    @cases_availables = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3", "QUITTER LA PARTIE"] # Les cases de choix de jeu
-    @player1 = player1
-    @player2 = player2
-    @active_player = active_player
+  attr_accessor :name_player1, :name_player2, :players_array, :choose_move_player1, :choose_move_player2, :valid_moves, :current_board
+
+  def initialize(name_player1, name_player2)
+    @name_player1 = name_player1
+    @name_player2 = name_player2
+    @players_array = [player_1 = Player.new(name_player1), player_2 = Player.new(name_player2)]
+    player_1.sign = "X"
+    player_2.sign = "O"
+    @valid_moves = ["a1", "a2", "a3", "b1", "b2", "b3", "c1", "c2", "c3"]
+    @current_board = Board.new
+    @current_board = @current_board.board
   end
 
-  def verify_endgame # Vérification si 3 symboles sont alignés ou si le jeu est complet
-    if @board.verif_alignement_points or @board.nb_coups_joues == 9 or @board.aborted 
-      true
-    else
-      false
+  def new_board_game
+    start_board = Board.new
+    start_board.generate_empty_board
+  end
+
+  def move_player1
+    loop do
+      puts "#{@players_array[0].name}, choisissez la cellule à jouer : (A1/B2/C3...)"
+      print "> "
+      @choose_move_player1 = gets.chomp.downcase
+      if @valid_moves.include?(@choose_move_player1) == true
+        break
+      end
+      puts "Choix invalide, réessayer."
+    end
+    @valid_moves.delete choose_move_player1
+  end
+
+  def move_player2
+    loop do
+      puts "#{@players_array[1].name}, choisissez la cellule à jouer: (A1/B2/C3...)"
+      print "> "
+      @choose_move_player2 = gets.chomp.downcase
+      if @valid_moves.include?(@choose_move_player2) == true
+        break
+      end
+      puts "Choix invalide, réessayer."
+    end
+    @valid_moves.delete choose_move_player2
+  end
+
+  def execute_move_player1
+    @current_board.each do |symbol,value|
+      symbol.to_s
+      if @choose_move_player1 == symbol
+        value = players_array[0].sign
+      end
     end
   end
 
-  def place_value
-    choice = @prompt.select("#{@active_player.name} (#{@active_player.symbol}), à vous de jouer : ", @cases_availables, cycle: true) # Choisi parmi la liste des choix disponibles
-    @cases_availables.delete(choice)
-    @board.change_value_case(transform_choice(choice), @active_player.symbol) # On applique au boardcase correspondant la bonne valeur
-    change_active_player # On change de joueur
-  end
-
-  def transform_choice(choice)
-    case choice
-    when "A1" then return 0
-    when "A2" then return 1
-    when "A3" then return 2
-    when "B1" then return 3
-    when "B2" then return 4
-    when "B3" then return 5
-    when "C1" then return 6
-    when "C2" then return 7
-    when "C3" then return 8
-    else
-      @board.ending_play 
-    end
-  end
-
-  def change_active_player # Changement de joueur
-    if @active_player == @player1
-      @active_player = @player2
-    else
-      @active_player = @player1
+  def execute_move_player2
+    @current_board.each do |symbol,value|
+      symbol.to_s
+      if @choose_move_player2 == symbol
+        value = players_array[1].sign
+      end
     end
   end
 end
